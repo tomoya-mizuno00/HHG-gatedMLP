@@ -22,32 +22,41 @@ HHG-gatedMLP/
 └── models/
     └── *.pth
 ```
-
 ## Data
-
 The HHG datasets are generated from strong-field approximation (SFA) simulations.
-Each dataset contains 1500 HHG spectra and the corresponding laser parameters used for the SFA calculations.
+Each dataset contains HHG spectra and the corresponding laser parameters used for the SFA calculations.
+
 The data can be loaded as follows:
+    import numpy as np
+    data = np.load("../data/hhg_dataset_SFA_HHG_Laserparam_2cycles.npz")
+    HHG_spec = data["HHG_spec"]
+    laser_param = data["y"]   # [E0, sin(CEP), cos(CEP)]
 
-```python
-data = np.load("data/hhg_dataset_SFA_HHG_Laserparam_2cycles.npz")
+where:
+- `HHG_spec`: one-dimensional HHG spectral arrays used as input for machine learning.
+- `laser_param`: corresponding laser parameters used as target values for model training.
+  - `E0`: laser electric field amplitude
+  - `sin(CEP)`, `cos(CEP)`: carrier-envelope phase (CEP) representation
 
-HHG_spec = data["HHG_spec"]
-laser_param = data["y"]  # [E0, sin(CEP), cos(CEP)]
+The datasets
+- `hhg_dataset_1.5cycles.npz`
+- `hhg_dataset_1.75cycles.npz`
+- `hhg_dataset_2cycles.npz`
+contain 1500 HHG spectra each. The pulse duration is fixed for each dataset, while the laser electric field amplitude (`E0`) and CEP are randomly sampled.
+
+A special dataset,
+    hhg_dataset_1.5cycles_CEP0-piE0-0.08.npz
+is provided for investigating the CEP dependence of HHG spectra.
+
+In this dataset, the pulse duration is fixed to 1.5 cycles and the laser electric field amplitude is fixed to `E0 = 0.08 a.u.`. The CEP is varied from 0 to π with a step size of π/100:
+
+    CEP = i * π / 100  (i = 0, 1, ..., 100)
+resulting in 101 HHG spectra.
 The file
-
-```
-hhg_index_to_energy_au.txt
-```
-provides the correspondence between the spectral array index and the photon energy axis in atomic units.
-The datasets correspond to different pulse durations:
-
-* `1.5cycles`
-* `1.75cycles`
-* `2cycles`
+    hhg_index_to_energy_au.txt
+provides the conversion between the spectral array index and the photon energy axis in atomic units.
 
 ## Trained models
-
 The directory `models/` contains pretrained PyTorch models.
 Naming convention:
 
